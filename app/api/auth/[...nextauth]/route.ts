@@ -4,34 +4,44 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
+      credentials: {
+        userName: {},
+        password: {},
+      },
       async authorize(credentials) {
-        const { userName, password } = credentials
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/test/login`, {
+        const credentialsDetails = {
+          userName: credentials?.userName,
+          password: credentials?.password,
+          roles: ['SUPERVISOR'],
+        }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/token`, {
           method: 'POST',
-          body: JSON.stringify({ userName }),
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(credentialsDetails),
         })
 
-        // const user = await res.json()
-
-        console.log(res)
-        console.log('테스트')
-
-        // if (user) {
-        //   return user
-        // } else {
-        //   return null
-        // }
+        if (res.ok) {
+          const user = await res.json()
+          return user
+        } else {
+          return null
+        }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, user, account }) {
       if (account) {
-        console.log(account)
-        token.accessToken = account.access_token
+        token.accessToken = user.data.tokenObject.accessToken
+        token.id = user.data.tokenObject.key
       }
       return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken
+      session.user.id = token.id
+
+      return session
     },
   },
   pages: {

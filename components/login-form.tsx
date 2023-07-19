@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/solid'
 import { signIn } from 'next-auth/react'
 import { twMerge } from 'tailwind-merge'
@@ -17,6 +18,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const idRef = React.useRef<HTMLInputElement>(null)
   const pwRef = React.useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
     if (e.target.id === 'id') {
@@ -36,26 +38,19 @@ export function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const enteredId = idRef.current?.value
-    const enteredPw = pwRef.current?.value
 
-    // const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/test/login`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({ userName: enteredId, password: enteredPw }),
-    //   headers: { 'Content-Type': 'application/json' },
-    // })
+    setIsLoading(true)
+    const res = await signIn('credentials', {
+      userName: idRef.current?.value,
+      password: pwRef.current?.value,
+      callbackUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard`,
+      redirect: false,
+    })
+    setIsLoading(false)
 
-    // const user = await res.json()
-
-    // console.log(user)
-
-    signIn('credentials', { userName: enteredId, password: enteredPw, redirect: false })
-
-    // setIsLoading(true)
-
-    // console.log
-
-    // setIsLoading(false)
+    if (res?.url) {
+      router.push('/dashboard')
+    }
   }
 
   return (
