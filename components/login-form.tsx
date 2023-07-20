@@ -40,17 +40,19 @@ export function LoginForm() {
     e.preventDefault()
 
     setIsLoading(true)
+
     const res = await signIn('credentials', {
       userName: idRef.current?.value,
       password: pwRef.current?.value,
       callbackUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard`,
       redirect: false,
     })
-    setIsLoading(false)
 
     if (res?.url) {
       router.push('/dashboard')
     }
+
+    setIsLoading(false)
   }
 
   return (
