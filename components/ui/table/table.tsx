@@ -8,7 +8,6 @@ import TableBodySelect from '@/components/ui/table/table-body-select'
 import TableHeaderSelect from '@/components/ui/table/table-header-select'
 
 import { dummyHeader, dummyHeaderProps } from './dummy-data'
-import { ListBoxPositionType } from './select'
 
 interface TableHeadProps {
   headerContent: dummyHeaderProps[]

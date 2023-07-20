@@ -39,6 +39,7 @@ export default function TableHeaderSelect({
   setTableOrder,
   getClickedHeaderName,
 }: TableHeaderSelectProps) {
+  const eventEl = useRef<HTMLUListElement>(null)
   const [clickValue, setClickValue] = useState<string>()
   const [show, setShow] = useState<boolean>(false)
 
@@ -46,6 +47,16 @@ export default function TableHeaderSelect({
     setClickValue(order)
     setTableOrder(order)
   }
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (eventEl.current && !eventEl.current.contains(e.target as Node)) {
+      setShow(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside)
+  }, [])
 
   // getClickValue : 클릭한 order값 (asc, desc)
   // getClickedHeaderName : 클릭한 헤더 row의 name 값
@@ -62,7 +73,10 @@ export default function TableHeaderSelect({
       enterTo="opacity-100 scale-100"
       leave="transition ease-in duration-75 transform"
     >
-      <ul className="absolute top-12 z-50 ml-[2px] mt-[2px] w-20  rounded-lg border border-slate-200 bg-white">
+      <ul
+        ref={eventEl}
+        className="absolute top-12 z-50 ml-[2px] mt-[2px] w-20  rounded-lg border border-slate-200 bg-white"
+      >
         <List
           headerName={headerName}
           value="Asc"

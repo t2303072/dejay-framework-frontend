@@ -3,8 +3,6 @@ import DownUparrow from '@/assets/arrow-down-up.svg'
 import Image from '@/node_modules/next/image'
 import { Transition } from '@windmill/react-ui'
 
-export type ListBoxPositionType = 'top' | 'bottom'
-
 interface ListProps {
   value: string
   getClickValue: (value: string | number) => void
@@ -42,11 +40,15 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
   // defaultValue: 기본 셀렉트박스 값, default value가 노출
   // contents : 셀렉트 박스 리스트 항목들 []
   // listBoxPosition : "top" of "bottom" 값 입력, 리스트 노출되는 위치가 상단/하단
-  // const handleClickOutside = (e) => {
-  //   if (eventEl.current && !eventEl.current.contains(e.target)) {
-  //     setShow(false)
-  //   }
-  // }
+  const handleClickOutside = (e: MouseEvent) => {
+    if (eventEl.current && !eventEl.current.contains(e.target as Node)) {
+      setShow(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside)
+  }, [])
 
   useEffect(() => {
     if (defaultValue && !clickValue) {

@@ -122,7 +122,7 @@ export default function TablePage() {
               <TableBody2 data={data2} />
             </Table>
           )}
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             <Select
               defaultValue={10}
               contents={['10', '20', '30']}

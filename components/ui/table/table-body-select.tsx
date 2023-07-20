@@ -3,7 +3,7 @@ import moreSelect from '@/assets/more-select.svg'
 import Image from '@/node_modules/next/image'
 import { Transition } from '@windmill/react-ui'
 
-import { List, ListBoxPositionType } from '@/components/ui/table/select'
+import { List } from '@/components/ui/table/select'
 
 interface TableBodySelectProps {
   openSelect: boolean
@@ -25,15 +25,15 @@ export default function TableBodySelect({ openSelect, listBoxPosition }: TableBo
 
   // getClickValue : 클릭한 order값 (Delete, Edit)
 
-  // const handleClickOutside = (e: MouseEvent) => {
-  // if (eventEl.current && !eventEl.current.contains()) {
-  //   setShow(false)
-  // }
-  // }
+  const handleClickOutside = (e: MouseEvent) => {
+    if (eventEl.current && !eventEl.current.contains(e.target as Node)) {
+      setShow(false)
+    }
+  }
 
-  // useEffect(() => {
-  // window.addEventListener('click', handleClickOutside)
-  // }, [])
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside)
+  }, [])
 
   return (
     <div ref={eventEl}>
