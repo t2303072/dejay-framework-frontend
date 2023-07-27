@@ -2,24 +2,58 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from '@/node_modules/next/image'
+import { BoardList, TableHeaderProps } from '@/types'
 
+import { getBoardList, localSelectBoardList, selectBoardList } from '@/lib/api'
 import Card from '@/components/ui/card'
+import { Spin } from '@/components/ui/spin'
 import { dummyBody, dummyBody2, dummyBodyProps, dummyHeader, dummyHeader2 } from '@/components/ui/table/dummy-data'
+import Pagination from '@/components/ui/table/pagination'
 import Select from '@/components/ui/table/select'
 import Table, { BodySelectTd, BodyTd, BodyTr, FootSelectTd, FootTd } from '@/components/ui/table/table'
 
 interface TableBodyProps {
-  data: dummyBodyProps[]
+  data: BoardList[]
 }
 
 export default function TablePage() {
   const [rowOrder, setRowOrder] = useState('')
   const [clickRowName, setClickRowName] = useState('')
   const [openSelect, setOpenSelect] = useState(false)
-  const [data2, setData2] = useState<dummyBodyProps[]>([...dummyBody2])
+  const [data2, setData2] = useState<BoardList[]>([])
   const [tableBody2, setTableBody2] = useState()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [totalPage, setTotalPage] = useState<number>()
+  const [rowNumber, setRowNumber] = useState<string | number>('10')
 
-  const [rowNumber, setRowNumber] = useState<string | number>()
+  const TableHeader: TableHeaderProps[] = [
+    {
+      id: 0,
+      name: 'No',
+      selectOrder: false,
+    },
+    {
+      id: 1,
+      name: 'Title',
+      selectOrder: false,
+    },
+    {
+      id: 2,
+      name: 'Content',
+      selectOrder: false,
+    },
+    {
+      id: 3,
+      name: 'Created At',
+      selectOrder: false,
+    },
+
+    {
+      id: 4,
+      name: 'Created By',
+      selectOrder: false,
+    },
+  ]
 
   const TableBody = dummyBody.map((item, index) =>
     index < dummyBody.length - 1 ? (
@@ -40,44 +74,65 @@ export default function TablePage() {
   )
 
   function TableBody2({ data }: TableBodyProps) {
-    const arrayLength = data.length - 1
-    // 테이블에서 마지막 열만 아래에 border가 없는 스타일
-    return data.map((item, index) =>
-      index < arrayLength ? (
-        <BodyTr key={item.Invoice}>
-          <BodyTd cursor={false}>{item.Invoice}</BodyTd>
-          <BodyTd cursor={false}>{item.Status}</BodyTd>
-          <BodyTd cursor={false}>{item.Method}</BodyTd>
-          <BodyTd cursor={true}>{item.Amount}</BodyTd>
-          <BodyTd cursor={false}>{item.Date}</BodyTd>
-          <BodySelectTd listBoxPosition="bottom" cursor={true} />
-        </BodyTr>
-      ) : (
-        <BodyTr key={item.Invoice}>
-          <FootTd cursor={false}>{item.Invoice}</FootTd>
-          <FootTd cursor={false}>{item.Status}</FootTd>
-          <FootTd cursor={false}>{item.Method}</FootTd>
-          <FootTd cursor={true}>{item.Amount}</FootTd>
-          <FootTd cursor={false}>{item.Date}</FootTd>
-          <FootSelectTd listBoxPosition="top" cursor={true} />
-        </BodyTr>
-      ),
-    )
+    if (data) {
+      const arrayLength = data.length - 1
+      // 테이블에서 마지막 열만 아래에 border가 없는 스타일
+      return data.map((item, index) =>
+        index < arrayLength ? (
+          <BodyTr key={item.seq}>
+            <BodyTd cursor={false}>{item.boardNo}</BodyTd>
+            <BodyTd cursor={false}>{item.title}</BodyTd>
+            <BodyTd cursor={false}>{item.content}</BodyTd>
+            <BodyTd cursor={true}>{item.createdAt}</BodyTd>
+            <BodyTd cursor={false}>{item.createdBy}</BodyTd>
+            <BodySelectTd listBoxPosition="bottom" cursor={true} />
+          </BodyTr>
+        ) : (
+          <BodyTr key={item.boardNo}>
+            <FootTd cursor={false}>{item.boardNo}</FootTd>
+            <FootTd cursor={false}>{item.title}</FootTd>
+            <FootTd cursor={false}>{item.content}</FootTd>
+            <FootTd cursor={true}>{item.createdAt}</FootTd>
+            <FootTd cursor={false}>{item.createdBy}</FootTd>
+            <FootSelectTd listBoxPosition="top" cursor={true} />
+          </BodyTr>
+        ),
+      )
+    }
+  }
+
+  function setTableRow(dataArray: BoardList[], rowPerPage: number) {
+    if (dataArray && rowPerPage) {
+      const array = [...dataArray]
+      const bodyArray = array.filter((item, index) => index < rowPerPage)
+      setData2(bodyArray)
+    }
+  }
+
+  function setTotalPageNumber(array: BoardList[], standard: number) {
+    if (array) {
+      const arrayLength = array.length
+
+      if (standard < arrayLength) {
+        const totalPages = Math.ceil(arrayLength / standard)
+        setTotalPage(totalPages)
+      }
+    }
   }
 
   useEffect(() => {
     function setTableOrder() {
       const Amount = clickRowName === 'Amount'
 
-      if (Amount && rowOrder === 'Asc') {
+      if (Amount && rowOrder === 'Asc' && data2) {
         const array = [...data2]
-        const data = array.sort((a, b) => Number(a.Amount) - Number(b.Amount))
+        const data = array.sort((a, b) => Number(a.createdAt) - Number(b.createdAt))
         setData2(data)
       }
 
-      if (Amount && rowOrder === 'Desc') {
+      if (Amount && rowOrder === 'Desc' && data2) {
         const array = [...data2]
-        const data = array.sort((a, b) => Number(b.Amount) - Number(a.Amount))
+        const data = array.sort((a, b) => Number(b.createdAt) - Number(a.createdAt))
         setData2(data)
       }
     }
@@ -88,23 +143,18 @@ export default function TablePage() {
   }, [clickRowName, rowOrder])
 
   useEffect(() => {
-    function setTableRow() {
-      if (rowNumber) {
-        const array: dummyBodyProps[] = [...dummyBody2]
-        const newbody = array.filter((item, index) => index < Number(rowNumber))
-
-        setData2(newbody)
-      }
-    }
-    setTableRow()
-  }, [rowNumber])
+    getBoardList().then((res) => {
+      setTableRow(res, 10)
+      setTotalPageNumber(res, Number(rowNumber))
+      setIsLoading(false)
+    })
+  }, [])
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-slate-100">
       <div className="max-w-2xl pl-[16px] pt-[16px]">
         <Card>
           <h2 className="pl-2.5 font-bold">테이블</h2>
-
           <Table
             getClickedHeaderName={setClickRowName}
             headerContent={dummyHeader}
@@ -114,21 +164,28 @@ export default function TablePage() {
           </Table>
         </Card>
       </div>
-      <div className="max-w-2xl pb-[16px] pl-[16px] pt-[16px]">
+
+      <div className=" max-w-2xl pb-[16px] pl-[16px] pt-[16px]">
         <Card>
           <h2 className="pl-2.5 font-bold">클릭 헤더 테이블</h2>
-          {rowNumber && (
-            <Table headerContent={dummyHeader2} setTableOrder={setRowOrder} getClickedHeaderName={setClickRowName}>
+          {isLoading ? (
+            <div className="min-h-[536px] pt-[262px] flex justify-center">
+              <Spin className="mr-2 h-5 w-5" />
+              loading...
+            </div>
+          ) : (
+            <Table headerContent={TableHeader} setTableOrder={setRowOrder} getClickedHeaderName={setClickRowName}>
               <TableBody2 data={data2} />
             </Table>
           )}
-          <div className="flex justify-start">
+          <div className="flex justify-between">
             <Select
-              defaultValue={10}
+              defaultValue="10"
               contents={['10', '20', '30']}
               listBoxPosition="top"
               getClickValue={setRowNumber}
             />
+            <Pagination totalPage={totalPage} />
           </div>
         </Card>
       </div>

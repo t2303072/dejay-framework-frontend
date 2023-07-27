@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .pagination-number {
+    @apply h-[25px] w-[25px] cursor-pointer text-center text-xs leading-[25px];
+  }
+
+  .pagination-click {
+    @apply rounded-md bg-black text-white;
+  }
+}

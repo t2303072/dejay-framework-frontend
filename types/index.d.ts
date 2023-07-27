@@ -32,6 +32,12 @@ type BoardList = {
   modifiedBy: string
 }
 
+export interface TableHeaderProps {
+  id: number
+  name: string
+  selectOrder: boolean
+}
+
 type BoardData = {
   boardList: BoardList
 }
@@ -52,3 +58,5 @@ export type InsertBoardRes = {
     board: number
   }
 }
+
+export type ListBoxPositionType = 'top' | 'bottom'

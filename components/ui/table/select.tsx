@@ -1,6 +1,7 @@
 import React, { ForwardedRef, forwardRef, ReactElement, useEffect, useRef, useState } from 'react'
 import DownUparrow from '@/assets/arrow-down-up.svg'
 import Image from '@/node_modules/next/image'
+import { ListBoxPositionType } from '@/types'
 import { Transition } from '@windmill/react-ui'
 
 interface ListProps {
@@ -58,7 +59,14 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
   }, [clickValue, defaultValue, getClickValue])
 
   return (
-    <div ref={eventEl} className="w-20 cursor-pointer rounded border border-slate-200 p-1 pl-2">
+    <div ref={eventEl} className="w-20 cursor-pointer rounded border border-slate-200 p-1 pl-2 max-h-8">
+      <div className="flex flex-row" onClick={(e) => setShow(!show)}>
+        {clickValue ?? defaultValue}
+
+        <div className="ml-8 mt-1">
+          <Image src={DownUparrow} width={15} height={15} alt="up arrow" />
+        </div>
+      </div>
       <Transition
         show={show}
         enter="transition ease-in-out duration-300 transform"
@@ -68,7 +76,7 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
       >
         <ul
           className={`${
-            listBoxPosition === 'top' ? 'absolute bottom-[56px] right-[19px]' : 'absolute'
+            listBoxPosition === 'top' ? 'relative bottom-[150px] right-[8px]' : 'absolute'
           } && z-50 w-20 rounded-lg border border-slate-200 bg-white font-medium text-slate-500`}
         >
           {contents.map((item) => (
@@ -84,13 +92,6 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
           ))}
         </ul>
       </Transition>
-      <div className="flex flex-row" onClick={(e) => setShow(!show)}>
-        {clickValue ?? defaultValue}
-
-        <div className="ml-8 mt-1">
-          <Image src={DownUparrow} width={15} height={15} alt="up arrow" />
-        </div>
-      </div>
     </div>
   )
 }

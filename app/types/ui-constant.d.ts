@@ -1,1 +1,0 @@
-type ListBoxPositionType = 'top' | 'bottom'

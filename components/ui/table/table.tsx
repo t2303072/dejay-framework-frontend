@@ -3,6 +3,7 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import moreSelect from '@/assets/more-select.svg'
 import Image from '@/node_modules/next/image'
+import { TableHeaderProps } from '@/types'
 
 import TableBodySelect from '@/components/ui/table/table-body-select'
 import TableHeaderSelect from '@/components/ui/table/table-header-select'
@@ -10,7 +11,7 @@ import TableHeaderSelect from '@/components/ui/table/table-header-select'
 import { dummyHeader, dummyHeaderProps } from './dummy-data'
 
 interface TableHeadProps {
-  headerContent: dummyHeaderProps[]
+  headerContent: TableHeaderProps[]
   getClickedHeaderName: (text: string) => void
   setTableOrder: (text: string) => void
 }
@@ -125,7 +126,7 @@ export function FootTd({ cursor, children }: TdProps) {
 
 export default function Table({ setTableOrder, children, headerContent, getClickedHeaderName }: TableProps) {
   return (
-    <table className="mt-3">
+    <table className="mt-3 ">
       <thead className="border-b-slate max-h-[40px] border-b font-medium text-slate-500  hover:bg-neutral-50">
         <TableHead
           setTableOrder={setTableOrder}

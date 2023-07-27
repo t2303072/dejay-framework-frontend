@@ -1,6 +1,7 @@
 import React, { MouseEventHandler, ReactNode, useEffect, useRef, useState } from 'react'
 import moreSelect from '@/assets/more-select.svg'
 import Image from '@/node_modules/next/image'
+import { ListBoxPositionType } from '@/types'
 import { Transition } from '@windmill/react-ui'
 
 import { List } from '@/components/ui/table/select'
