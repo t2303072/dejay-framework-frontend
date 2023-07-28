@@ -1,10 +1,10 @@
 import React, { MouseEventHandler, ReactNode, useEffect, useRef, useState } from 'react'
-import moreSelect from '@/assets/more-select.svg'
 import Image from '@/node_modules/next/image'
+import { MoreSelect } from '@/public/svgs/svg'
 import { ListBoxPositionType } from '@/types'
 import { Transition } from '@windmill/react-ui'
 
-import { List } from '@/components/ui/table/select'
+import { List } from '@/components/ui/select'
 
 interface TableBodySelectProps {
   openSelect: boolean
@@ -38,7 +38,7 @@ export default function TableBodySelect({ openSelect, listBoxPosition }: TableBo
 
   return (
     <div ref={eventEl}>
-      <Image alt="more menu icon" width={20} height={20} src={moreSelect} />
+      <Image alt="more menu icon" width={20} height={20} src={MoreSelect} />
       <Transition
         show={show}
         enter="transition ease-in-out duration-300 transform"

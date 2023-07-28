@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, ReactElement, useEffect, useRef, useState } from 'react'
-import DownUparrow from '@/assets/arrow-down-up.svg'
 import Image from '@/node_modules/next/image'
+import { ArrowDownUp } from '@/public/svgs/svg'
 import { ListBoxPositionType } from '@/types'
 import { Transition } from '@windmill/react-ui'
 
@@ -64,7 +64,7 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
         {clickValue ?? defaultValue}
 
         <div className="ml-8 mt-1">
-          <Image src={DownUparrow} width={15} height={15} alt="up arrow" />
+          <Image src={ArrowDownUp} width={15} height={15} alt="up arrow" />
         </div>
       </div>
       <Transition

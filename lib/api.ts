@@ -1,12 +1,12 @@
 import type { InsertBoardReq, InsertBoardRes, SelectBoardListRes } from '@/types'
 
-async function GET<T>(path: string): Promise<T> {
+export async function GET<T>(path: string) {
   const res = await fetch(`backend/${path}`)
 
   return res.json()
 }
 
-async function POST<T, U>(path: string, data: U): Promise<T> {
+export async function POST<T, U>(path: string, data: U): Promise<T> {
   const res = await fetch(`backend/${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -16,7 +16,7 @@ async function POST<T, U>(path: string, data: U): Promise<T> {
   return res.json()
 }
 
-async function GET_LOCAL<T>(path: string) {
+export async function GET_LOCAL<T>(path: string) {
   const res = await fetch(`local/${path}`)
 
   return res.json()
@@ -30,7 +30,7 @@ export const localSelectBoardList = async () => GET_LOCAL<SelectBoardListRes>('t
 
 export const getBoardList = async () => {
   try {
-    const res = await localSelectBoardList()
+    const res = await selectBoardList()
     return res.data.boardList
   } catch (error) {
     console.log(error)

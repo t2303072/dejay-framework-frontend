@@ -2,14 +2,14 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from '@/node_modules/next/image'
+import { getBoardList, localSelectBoardList, selectBoardList } from '@/services/board'
 import { BoardList, TableHeaderProps } from '@/types'
 
-import { getBoardList, localSelectBoardList, selectBoardList } from '@/lib/api'
 import Card from '@/components/ui/card'
+import Select from '@/components/ui/select'
 import { Spin } from '@/components/ui/spin'
 import { dummyBody, dummyBody2, dummyBodyProps, dummyHeader, dummyHeader2 } from '@/components/ui/table/dummy-data'
 import Pagination from '@/components/ui/table/pagination'
-import Select from '@/components/ui/table/select'
 import Table, { BodySelectTd, BodyTd, BodyTr, FootSelectTd, FootTd } from '@/components/ui/table/table'
 
 interface TableBodyProps {
@@ -143,10 +143,12 @@ export default function TablePage() {
   }, [clickRowName, rowOrder])
 
   useEffect(() => {
-    getBoardList().then((res) => {
-      setTableRow(res, 10)
-      setTotalPageNumber(res, Number(rowNumber))
-      setIsLoading(false)
+    getBoardList().then((result) => {
+      if (result) {
+        setTableRow(result, 10)
+        setTotalPageNumber(result, Number(rowNumber))
+        setIsLoading(false)
+      }
     })
   }, [])
 
