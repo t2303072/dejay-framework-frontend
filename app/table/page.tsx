@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Image from '@/node_modules/next/image'
 import { getBoardList, localSelectBoardList, selectBoardList } from '@/services/board'
+import { selectMemberList } from '@/services/member'
 import { BoardList, TableHeaderProps } from '@/types'
 
 import Card from '@/components/ui/card'
@@ -143,6 +144,7 @@ export default function TablePage() {
   }, [clickRowName, rowOrder])
 
   useEffect(() => {
+    selectMemberList()
     getBoardList().then((result) => {
       if (result) {
         setTableRow(result, 10)

@@ -1,5 +1,3 @@
-import { AuthProvider } from '@/contexts/auth-provider'
-
 import './globals.css'
 
 import { Metadata } from 'next'
@@ -23,10 +21,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          {children}
-          <div id="modal" />
-        </AuthProvider>
+        {children}
+        <div id="modal" />
       </body>
     </html>
   )

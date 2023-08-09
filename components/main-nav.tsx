@@ -1,22 +1,28 @@
 'use client'
 
 import Image from 'next/image'
-import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Dejay } from '@/public/images/image'
+import { requestLogout } from '@/services/login'
 
 import { Button } from '@/components/ui/button'
 
 export function MainNav() {
-  const { data: session } = useSession()
+  const router = useRouter()
+  // function handleClick() {
+  //   signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}` })
+  // }
 
-  function handleClick() {
-    signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}` })
+  function logoutClick() {
+    requestLogout()
+    router.push('/')
   }
 
   return (
     <div className="flex w-full items-center justify-between">
-      <Image src="/dejay.png" width={120} height={30} alt="dejay logo" />
-      <div>{session?.user.id}님</div>
-      <Button className="h-10 px-3 py-2" type="button" onClick={handleClick}>
+      <Image src={Dejay} width={120} height={30} alt="dejay logo" />
+      <div>user님</div>
+      <Button className="h-10 px-3 py-2" type="button" onClick={() => logoutClick()}>
         로그아웃
       </Button>
     </div>

@@ -16,9 +16,20 @@ type ResultCodeMsg =
       message: '로그인 정보가 없습니다.'
     }
 
-type ResultStatus = ResultCodeMsg & {
+// type ResultStatus<T> = ResultCodeMsg & {
+//   specificMsg: string | null
+//   fieldErrors: string | null
+// }
+
+interface ResultStatus {
+  code: number
+  message: string
   specificMsg: string | null
   fieldErrors: string | null
+}
+
+interface CommonResponse {
+  resultStatus: ResultStatus
 }
 
 type BoardList = {
@@ -42,8 +53,7 @@ type BoardData = {
   boardList: BoardList
 }
 
-export type SelectBoardListRes = {
-  resultStatus: ResultStatus
+export interface SelectBoardListRes extends CommonResponse {
   data: BoardData
 }
 
@@ -53,7 +63,7 @@ export type InsertBoardReq = {
 }
 
 export type InsertBoardRes = {
-  resultStatus: ResultStatus
+  resultStatus: CommonResponse
   data: {
     board: number
   }
