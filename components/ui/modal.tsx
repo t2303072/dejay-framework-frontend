@@ -1,14 +1,28 @@
-//작업중
+import React, { ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 
-import { Spin } from '@/components/ui/spin'
+interface ModalProps {
+  title?: string
+  children: ReactNode
+  className?: string
+}
 
-export function Modal() {
+function Modal({ title, children, className }: ModalProps) {
   return (
-    <div className="fixed inset-0 z-10 flex justify-center">
-      <div className="fixed bottom-14 z-20 flex h-12 w-52 animate-fade-up items-center justify-start rounded-md bg-slate-950 bg-opacity-80 px-4 text-white">
-        <Spin className="mr-4 h-5 w-5" />
-        <p className="font-medium">Loading...</p>
+    <div className=" fixed w-screen h-screen text-center inset-0 flex justify-center z-40 bg-opacity-60 bg-white">
+      <div className="relative w-full max-w-md max-h-full">
+        <div
+          className={twMerge(
+            'drop-shadow-lg p-6 fixed left-[45%] top-[40%] ml-[-10%] bg-white rounded z-50 border border-slate-300',
+            className,
+          )}
+        >
+          {title && <h5>{title}</h5>}
+          {children}
+        </div>
       </div>
     </div>
   )
 }
+
+export default Modal

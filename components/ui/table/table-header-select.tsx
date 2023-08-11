@@ -44,8 +44,10 @@ export default function TableHeaderSelect({
   const [show, setShow] = useState<boolean>(false)
 
   const getClickValue = (order: string) => {
-    setClickValue(order)
-    setTableOrder(order)
+    if (order) {
+      setClickValue(order)
+      setTableOrder(order)
+    }
   }
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -69,13 +71,13 @@ export default function TableHeaderSelect({
     <Transition
       show={show}
       enter="transition ease-in-out duration-300 transform"
-      enterFrom="opacity-0 scale-0"
-      enterTo="opacity-100 scale-100"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
       leave="transition ease-in duration-75 transform"
     >
       <ul
         ref={eventEl}
-        className="absolute top-12 z-50 ml-[2px] mt-[2px] w-20  rounded-lg border border-slate-200 bg-white"
+        className="absolute top-12 z-50 ml-[2px] mt-[2px] w-20  rounded-lg border border-slate-300 bg-white"
       >
         <List
           headerName={headerName}

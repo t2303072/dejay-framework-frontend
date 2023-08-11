@@ -19,12 +19,14 @@ export function MainNav() {
   }
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className="pl-5 pr-5 flex w-full items-center justify-between h-16 border-b border-b-slate-300 bg-white">
       <Image src={Dejay} width={120} height={30} alt="dejay logo" />
-      <div>user님</div>
-      <Button className="h-10 px-3 py-2" type="button" onClick={() => logoutClick()}>
-        로그아웃
-      </Button>
+      <div className="flex flex-row">
+        <div className="mr-3 mt-2">user님</div>
+        <Button className="h-10 px-3 py-2" type="button" onClick={() => logoutClick()}>
+          로그아웃
+        </Button>
+      </div>
     </div>
   )
 }

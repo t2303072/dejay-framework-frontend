@@ -1,12 +1,19 @@
 import React from 'react'
+import { twMerge } from 'tailwind-merge'
 
 interface CardProps {
   children: React.ReactNode
+  className?: string
 }
 
-export default function Card({ children }: CardProps) {
+export default function Card({ children, className }: CardProps) {
   return (
-    <div className="relative flex w-full min-w-0 flex-col break-words rounded-lg bg-white p-5 shadow-lg">
+    <div
+      className={twMerge(
+        'relative flex w-full min-w-0 flex-col break-words rounded-lg border border-slate-300 bg-white p-5',
+        className,
+      )}
+    >
       {children}
     </div>
   )

@@ -21,7 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <div id="app">{children}</div>
         <div id="modal" />
       </body>
     </html>

@@ -1,8 +1,11 @@
+'use client'
+
 import React, { ForwardedRef, forwardRef, ReactElement, useEffect, useRef, useState } from 'react'
 import Image from '@/node_modules/next/image'
 import { ArrowDownUp } from '@/public/svgs/svg'
 import { ListBoxPositionType } from '@/types'
 import { Transition } from '@windmill/react-ui'
+import { twMerge } from 'tailwind-merge'
 
 interface ListProps {
   value: string
@@ -14,6 +17,8 @@ interface SelectProps {
   listBoxPosition: ListBoxPositionType
   contents: string[]
   getClickValue: (value: string | number) => void
+  width?: string
+  ariaLabel?: string
 }
 
 // eslint-disable-next-line react/display-name
@@ -33,7 +38,14 @@ export const List = React.forwardRef<HTMLLIElement, React.PropsWithChildren<List
   },
 )
 
-export default function Select({ defaultValue, listBoxPosition, contents, getClickValue }: SelectProps) {
+export default function Select({
+  defaultValue,
+  listBoxPosition,
+  contents,
+  getClickValue,
+  width,
+  ariaLabel,
+}: SelectProps) {
   const eventEl = useRef<HTMLDivElement>(null)
   const [clickValue, setClickValue] = useState<string | number>()
   const [show, setShow] = useState(false)
@@ -59,25 +71,28 @@ export default function Select({ defaultValue, listBoxPosition, contents, getCli
   }, [clickValue, defaultValue, getClickValue])
 
   return (
-    <div ref={eventEl} className="w-20 cursor-pointer rounded border border-slate-200 p-1 pl-2 max-h-8">
-      <div className="flex flex-row" onClick={(e) => setShow(!show)}>
-        {clickValue ?? defaultValue}
+    <div
+      ref={eventEl}
+      className={twMerge('relative cursor-pointer rounded border border-slate-300 p-1 pl-2 max-h-9', width)}
+    >
+      <button aria-label={ariaLabel} className="flex flex-row justify-between w-[95%]" onClick={(e) => setShow(!show)}>
+        <span>{clickValue ?? defaultValue}</span>
 
-        <div className="ml-8 mt-1">
-          <Image src={ArrowDownUp} width={15} height={15} alt="up arrow" />
-        </div>
-      </div>
+        <Image className="mt-1" src={ArrowDownUp} width={15} height={15} alt="up arrow" />
+      </button>
       <Transition
         show={show}
         enter="transition ease-in-out duration-300 transform"
-        enterFrom="opacity-0 scale-0"
-        enterTo="opacity-100 scale-100"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
         leave="transition ease-in duration-75 transform"
       >
         <ul
           className={`${
-            listBoxPosition === 'top' ? 'relative bottom-[150px] right-[8px]' : 'absolute'
-          } && z-50 w-20 rounded-lg border border-slate-200 bg-white font-medium text-slate-500`}
+            listBoxPosition === 'bottom'
+              ? twMerge('absolute left-[-2px] mt-2 mr-2', width)
+              : twMerge('relative bottom-[150px] right-[8px]', width)
+          } &&  z-20 rounded-lg border border-slate-300 bg-white font-medium text-slate-500`}
         >
           {contents.map((item) => (
             <List

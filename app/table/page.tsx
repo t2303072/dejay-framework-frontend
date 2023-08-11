@@ -54,6 +54,11 @@ export default function TablePage() {
       name: 'Created By',
       selectOrder: false,
     },
+    {
+      id: 5,
+      name: '',
+      selectOrder: false,
+    },
   ]
 
   const TableBody = dummyBody.map((item, index) =>
@@ -155,7 +160,7 @@ export default function TablePage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-slate-100">
+    <div className="flex min-h-screen w-full flex-col">
       <div className="max-w-2xl pl-[16px] pt-[16px]">
         <Card>
           <h2 className="pl-2.5 font-bold">테이블</h2>
@@ -188,6 +193,7 @@ export default function TablePage() {
               contents={['10', '20', '30']}
               listBoxPosition="top"
               getClickValue={setRowNumber}
+              width="w-20"
             />
             <Pagination totalPage={totalPage} />
           </div>

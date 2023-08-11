@@ -42,8 +42,8 @@ export default function TableBodySelect({ openSelect, listBoxPosition }: TableBo
       <Transition
         show={show}
         enter="transition ease-in-out duration-300 transform"
-        enterFrom="opacity-0 scale-0"
-        enterTo="opacity-100 scale-100"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
         leave="transition ease-in duration-75 transform"
       >
         <ul
