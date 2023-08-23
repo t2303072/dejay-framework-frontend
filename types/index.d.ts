@@ -1,20 +1,4 @@
-type ResultCodeMsg =
-  | {
-      code: 200
-      message: 'success'
-    }
-  | {
-      code: 400
-      message: 'fail'
-    }
-  | {
-      code: 1
-      message: '조회된 데이터가 없습니다.'
-    }
-  | {
-      code: 2
-      message: '로그인 정보가 없습니다.'
-    }
+
 
 // type ResultStatus<T> = ResultCodeMsg & {
 //   specificMsg: string | null
@@ -70,3 +54,57 @@ export type InsertBoardRes = {
 }
 
 export type ListBoxPositionType = 'top' | 'bottom'
+
+export interface Paging {
+  currentPage: number
+  displayRow: number
+}
+
+export type OrderByCodeType = 'co' | 'cn' | 'r1' | 'r2'
+
+export interface CodeListSearchType {
+  search: {
+    codeSearch: {
+      type1: string
+      searchWord1: string
+      orderBy: OrderByCodeType
+      descAsc: string
+      parentCode: string
+      paging: Paging
+    }
+  }
+}
+export interface CodeList {
+  code: string
+  codeName: string
+  remark1: string
+  value1: number
+  remark2: string
+  value2: number
+  codeOrd: number
+  useYn: string
+}
+
+export interface InsertCodeType {
+  code: string
+  codeName: string
+  remark1: string
+  value1: number
+  remark2: string
+  value2: number
+  useYn: string
+  codeOrd: number
+}
+
+export interface InsertCodeRequest {
+  data: {
+    code: InsertCodeType
+  }
+}
+
+export interface CodeListResponse {
+  resultStatus: CommonResponse
+  data: {
+    codeList: CodeList[]
+  }
+}

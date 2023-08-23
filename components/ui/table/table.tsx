@@ -1,13 +1,19 @@
 'use client'
 
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import moreSelect from '@/assets/more-select.svg'
 import Image from '@/node_modules/next/image'
 import { ListBoxPositionType, TableHeaderProps } from '@/types'
+import { useDrag, useDrop } from 'react-dnd'
 
 import TableBodySelect from '@/components/ui/table/table-body-select'
 import TableHeaderSelect from '@/components/ui/table/table-header-select'
 
+export const ItemTypes = {
+  ROW: 'row', // 행 아이템 타입
+  CARD: 'card', // 카드 아이템 타입
+  // ... 추가적인 아이템 타입들 ...
+}
 interface TableHeadProps {
   headerContent: TableHeaderProps[]
   getClickedHeaderName: (text: string) => void
@@ -16,6 +22,14 @@ interface TableHeadProps {
 
 interface TableProps extends TableHeadProps {
   children: React.ReactNode
+}
+
+interface DragBodyTrProps {
+  children: React.ReactNode
+  onDragStart: (e: React.DragEvent<HTMLTableRowElement>) => void
+  onDragEnter: (e: React.DragEvent<HTMLTableRowElement>) => void
+  onDragOver: (e: React.DragEvent<HTMLTableRowElement>) => void
+  onDragEnd: (e: React.DragEvent<HTMLTableRowElement>) => void
 }
 
 interface BodyTrProps {
@@ -82,6 +96,21 @@ export function BodyTr({ children }: BodyTrProps) {
   return <tr className="hover:bg-neutral-50">{children}</tr>
 }
 
+export function DragBodyTr({ children, onDragStart, onDragEnter, onDragOver, onDragEnd }: DragBodyTrProps) {
+  return (
+    <tr
+      draggable
+      className="hover:bg-neutral-50"
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+    >
+      {children}
+    </tr>
+  )
+}
+
 // 테이블 td 커서 유무에따라 포인터 커서 설정
 export function BodyTd({ cursor, children }: TdProps) {
   return cursor ? (
@@ -124,7 +153,7 @@ export function FootTd({ cursor, children }: TdProps) {
 
 export default function Table({ setTableOrder, children, headerContent, getClickedHeaderName }: TableProps) {
   return (
-    <table className="mt-3 ">
+    <table className="mt-3 text-sm">
       <thead className="border-b-slate max-h-[40px] border-b font-medium text-slate-500  hover:bg-neutral-50">
         <TableHead
           setTableOrder={setTableOrder}

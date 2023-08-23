@@ -1,49 +1,62 @@
 'use client'
 
-import React, { ReactDOM, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Close } from '@/public/svgs/svg'
+import { Bars, Close } from '@/public/svgs/svg'
 import { requestCodeList, requestInsertCodeList } from '@/services/code'
-import {
-  CodeList,
-  CodeListSearchType,
-  InsertCodeRequest,
-  InsertCodeType,
-  OrderByCodeType,
-  TableHeaderProps,
-} from '@/types'
-import { Button } from '@material-tailwind/react'
-import { TableBody } from '@windmill/react-ui'
+import { CodeList, CodeListSearchType, InsertCodeType, TableHeaderProps } from '@/types'
+import { Button, IconButton, Radio } from '@material-tailwind/react'
 
 import Card from '@/components/ui/card'
 import NormalInput from '@/components/ui/input/normal-input'
 import Modal from '@/components/ui/modal'
 import ModalPortal from '@/components/ui/modal-portal'
-import Select, { ContentsObject } from '@/components/ui/select'
+import Select from '@/components/ui/select'
 import { Spin } from '@/components/ui/spin'
-import Table, { BodyTd, BodyTr, FootTd } from '@/components/ui/table/table'
+import Table, { BodyTd, BodyTr, DragBodyTr, FootTd } from '@/components/ui/table/table'
+
+interface Props {
+  params: {
+    slug: string
+  }
+}
 
 interface TableBodyProps {
   data: CodeList[]
 }
 
-export default function GroupcodePage() {
+export default function SubCodePage({ params }: Props) {
   const router = useRouter()
   const searchOrders = [
     { title: '코드명', value: 'cn' },
     { title: '코드 설명', value: 'r1' },
   ]
+
+  const selectBoxSearchParam: CodeListSearchType = {
+    search: {
+      codeSearch: {
+        type1: 'cn',
+        searchWord1: '',
+        orderBy: 'co',
+        descAsc: 'asc',
+        parentCode: '0000',
+        paging: {
+          currentPage: 1,
+          displayRow: 10,
+        },
+      },
+    },
+  }
+
   const defaultSearchParam: CodeListSearchType = {
     search: {
       codeSearch: {
         type1: 'cn',
-        searchWord1: '코드',
+        searchWord1: '',
         orderBy: 'co',
         descAsc: 'asc',
-
-        parentCode: '0000',
-
+        parentCode: params.slug,
         paging: {
           currentPage: 1,
           displayRow: 10,
@@ -61,51 +74,139 @@ export default function GroupcodePage() {
   const [rowOrder, setRowOrder] = useState('')
   const [clickRowName, setClickRowName] = useState('')
   const [data, setData] = useState<CodeList[]>([])
-  const [inputGroup, setInputGroup] = useState<string>('')
+  const [clickedRow, setClickedRow] = useState<number>()
+  const [inputCode, setInputCode] = useState<string>('')
   const [inputCodeName, setInputCodeName] = useState<string>('')
-  const [inputDesc, setInputDesc] = useState<string>('')
+  const [inputCodeValue, setInputCodeValue] = useState<string>('')
+  const [inputCodeValueNum, setInputCodeValueNum] = useState<number>(0)
+  const [inputUseYn, setInputUseYn] = useState<string>('')
   const [searchParams, setSearchParams] = useState<CodeListSearchType>(defaultSearchParam)
+  const [selectedRadio, setSelectedRadio] = useState<string>('Y')
 
   const tableHeader: TableHeaderProps[] = [
+    { id: 0, name: '', selectOrder: false },
     {
-      id: 0,
-      name: '그룹 코드',
+      id: 1,
+      name: '코드',
       selectOrder: true,
     },
     {
-      id: 1,
+      id: 2,
+      name: '순서',
+      selectOrder: false,
+    },
+    {
+      id: 3,
       name: '코드명',
       selectOrder: false,
     },
     {
-      id: 2,
-      name: '코드 설명',
+      id: 4,
+      name: '코드값1 명',
+      selectOrder: false,
+    },
+    {
+      id: 5,
+      name: '코드값1 (숫자)',
+      selectOrder: false,
+    },
+    {
+      id: 5,
+      name: '사용여부',
       selectOrder: false,
     },
   ]
 
   function setCodeSelectList(list: CodeList[]) {
     const array = list.map((item) => `${item.codeName}(${item.code.substring(0, 4)})`)
+    const defaultValue = array.find((item) => item.includes(params.slug))
+    if (defaultValue) {
+      setSelectGroup(defaultValue)
+    }
     setSelectList(array)
   }
 
   function TableBody({ data }: TableBodyProps) {
+    const [dragItem, setDragItem] = useState<CodeList | null>()
+    const [dragItemIndex, setDragItemIndex] = useState<number | null>()
+    // 드래그할 아이템 인덱스
+    const [dropOverItem, setDropOverItem] = useState<CodeList>()
+    const [dropOverItemIndex, setDropOverItemIndex] = useState<number | null>()
+    // 드랍할 아이템
+
+    const handleDragStart = (index: number) => {
+      setDragItemIndex(index)
+    }
+
+    const handleDragOver = (e: React.DragEvent<HTMLTableRowElement>, index: number) => {
+      e.preventDefault()
+      setDropOverItemIndex(index)
+    }
+
+    const handleDragEnd = (e: React.DragEvent<HTMLTableRowElement>, index: number) => {
+      e.preventDefault()
+      if (dragItemIndex !== null && dropOverItemIndex !== null && dragItemIndex !== dropOverItemIndex) {
+        const newData = [...data]
+
+        // 드래그 아이템을 삭제한 후 드롭 위치에 삽입
+        if (dragItemIndex !== undefined && dropOverItemIndex !== undefined) {
+          const [draggedItem] = newData.splice(dragItemIndex, 1)
+          newData.splice(dropOverItemIndex, 0, draggedItem)
+        }
+
+        // newData를 사용하여 상태 업데이트
+        setData(newData)
+
+        // 드래그 아이템과 드롭 위치의 인덱스 초기화
+        setDragItemIndex(null)
+        setDropOverItemIndex(null)
+      }
+    }
+
     if (data) {
       const arrayLength = data.length - 1
       // 테이블에서 마지막 열만 아래에 border가 없는 스타일
       return data.map((item, index) =>
         index < arrayLength ? (
-          <BodyTr key={item.code}>
+          <DragBodyTr
+            onDragStart={(e) => handleDragStart(index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnter={(e) => {}}
+            onDragEnd={(e) => {
+              handleDragEnd(e, index)
+            }}
+            key={item.code}
+          >
+            <BodyTd cursor={true}>
+              <Image src={Bars} alt="bars icon" width={20} height={20} />
+            </BodyTd>
             <BodyTd cursor={false}>{item.code}</BodyTd>
+            <BodyTd cursor={false}>{item.codeOrd}</BodyTd>
             <BodyTd cursor={false}>{item.codeName}</BodyTd>
             <BodyTd cursor={false}>{item.remark1}</BodyTd>
-          </BodyTr>
+            <BodyTd cursor={false}>{item.value1}</BodyTd>
+            <BodyTd cursor={false}>{item.useYn}</BodyTd>
+          </DragBodyTr>
         ) : (
-          <BodyTr key={item.code}>
+          <DragBodyTr
+            onDragStart={(e) => handleDragStart(index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnter={(e) => {}}
+            onDragEnd={(e) => {
+              handleDragEnd(e, index)
+            }}
+            key={item.code}
+          >
+            <FootTd cursor={true}>
+              <Image src={Bars} alt="bars icon" width={20} height={20} />
+            </FootTd>
             <FootTd cursor={false}>{item.code}</FootTd>
+            <FootTd cursor={false}>{item.codeOrd}</FootTd>
             <FootTd cursor={false}>{item.codeName}</FootTd>
             <FootTd cursor={false}>{item.remark1}</FootTd>
-          </BodyTr>
+            <FootTd cursor={false}>{item.value1}</FootTd>
+            <FootTd cursor={false}>{item.useYn}</FootTd>
+          </DragBodyTr>
         ),
       )
     }
@@ -113,29 +214,32 @@ export default function GroupcodePage() {
 
   function onSubmit() {
     const request: InsertCodeType = {
-      code: `${inputGroup}0000`,
+      code: `${params.slug}${inputCode}`,
       codeName: inputCodeName,
-      remark1: inputDesc,
-      value1: 11,
-      remark2: inputDesc,
+      remark1: inputCodeValue,
+      value1: inputCodeValueNum,
+      remark2: '',
       value2: 22,
-      useYn: 'Y',
-      codeOrd: 0,
+      useYn: selectedRadio,
+      codeOrd: selectList.length,
     }
 
-    requestInsertCodeList({ data: { code: request } })
+    requestInsertCodeList({ data: { code: request } }).then(() => window.location.reload())
   }
 
-  function searchList(searchParams: CodeListSearchType) {
-    if (searchParams) {
-      requestCodeList(searchParams).then((result) => {
-        if (result && result.data) {
+  // 셀렉트박스 내 selectList 변경할지 여부에 대해 boolean으로 파라미터를 받음
+  function searchList(searchParams: CodeListSearchType, selectList: boolean) {
+    requestCodeList(searchParams).then((result) => {
+      if (result && result.data) {
+        if (!selectList) {
           setData(result.data.codeList)
           setIsLoading(false)
+        }
+        if (selectList) {
           setCodeSelectList(result.data.codeList)
         }
-      })
-    }
+      }
+    })
   }
 
   function onCheckValueSearch() {
@@ -145,12 +249,17 @@ export default function GroupcodePage() {
     } else if (!searchWord) {
       alert('검색할 값을 입력해주세요!')
     } else {
-      searchList(searchParams)
+      searchList(searchParams, false)
     }
   }
 
+  function radioHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSelectedRadio(event.target.value)
+  }
+
   useEffect(() => {
-    searchList(searchParams)
+    searchList(searchParams, false)
+    searchList(selectBoxSearchParam, true)
   }, [])
 
   useEffect(() => {
@@ -183,7 +292,7 @@ export default function GroupcodePage() {
           <div className="flex flex-row items-center">
             <label className="mr-2 text-sm">그룹코드</label>
             <Select
-              defaultValue="전체"
+              defaultValue={selectGroup}
               listBoxPosition="bottom"
               contents={selectList}
               getClickValue={(text) => {
@@ -209,8 +318,8 @@ export default function GroupcodePage() {
               ariaLabel="코드 검색시 카테고리 선택"
             />
             <NormalInput
-              disabled={false}
               value={searchWord}
+              disabled={false}
               onChange={(e) => setSearchWord(e.target.value)}
               className="min-w-50 ml-2"
             />
@@ -219,7 +328,7 @@ export default function GroupcodePage() {
             </Button>
             <Button
               onClick={() => {
-                searchList(defaultSearchParam)
+                searchList(defaultSearchParam, false)
                 setOrderValue('')
                 setSearchWord('')
                 setCodeSearchClickValue('선택')
@@ -248,6 +357,7 @@ export default function GroupcodePage() {
           </Table>
         </Card>
       )}
+
       <ModalPortal>
         <Modal open={openModal} className="w-[530px]">
           <div>
@@ -261,10 +371,19 @@ export default function GroupcodePage() {
             />
             <div className="flex flex-col">
               <NormalInput
+                onChange={(e) => {
+                  const inputValue = e.target.value
+                  const numericValue = inputValue.replace(/\D/g, '')
+
+                  setInputCode(numericValue)
+                }}
+                // 숫자만 입력할 수 있도록 처리
+                onInput={(e) => {
+                  e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '') // 숫자 이외의 문자 제거
+                }}
                 disabled={false}
                 maxLength={4}
-                onChange={(e) => setInputGroup(e.target.value)}
-                label="그룹코드"
+                label="코드"
                 className="w-[200px] ml-2 mb-4"
               />
               <NormalInput
@@ -275,14 +394,42 @@ export default function GroupcodePage() {
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputDesc(e.target.value)}
-                label="코드 설명"
+                onChange={(e) => setInputCodeValue(e.target.value)}
+                label="코드값1 명"
                 className="min-w-[350px] mb-4 ml-2"
               />
+              <NormalInput
+                disabled={false}
+                onChange={(e) => setInputCodeValueNum(Number(e.target.value))}
+                label="코드값1 (숫자)"
+                className="w-[200px] ml-2 mb-4"
+              />
+              <div>
+                <div className="flex">
+                  <label htmlFor="useYn" className="font-bold text-sm mt-2 w-[100px]">
+                    사용여부
+                  </label>
+                  <Radio
+                    onChange={(e) => radioHandleChange(e)}
+                    checked={selectedRadio === 'Y'}
+                    value="Y"
+                    name="useYn"
+                    label="사용"
+                    defaultChecked
+                  />
+                  <Radio
+                    onChange={(e) => radioHandleChange(e)}
+                    checked={selectedRadio === 'N'}
+                    value="N"
+                    name="useYn"
+                    label="미사용"
+                  />
+                </div>
+              </div>
             </div>
             <div className="relative left-[161px]">
               <Button
-                className="mr-2"
+                className="mr-2 mt-2"
                 onClick={() => {
                   onSubmit()
                   setOpenModal(false)
@@ -290,7 +437,9 @@ export default function GroupcodePage() {
               >
                 저장
               </Button>
-              <Button onClick={() => setOpenModal(false)}>닫기</Button>
+              <Button className="mt-2" onClick={() => setOpenModal(false)}>
+                닫기
+              </Button>
             </div>
           </div>
         </Modal>

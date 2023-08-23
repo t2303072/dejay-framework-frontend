@@ -1,3 +1,9 @@
+'use client'
+
+import { radio, ThemeProvider } from '@material-tailwind/react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import { MainNav } from '@/components/main-nav'
 import { SidebarNav } from '@/components/sidebar-nav'
 
@@ -15,7 +21,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </header>
       <div className="container flex gap-10 pt-16">
         <SidebarNav />
-        <main className="h-full w-full py-10">{children}</main>
+        <DndProvider backend={HTML5Backend}>
+          <ThemeProvider>
+            <main className="h-full w-full py-10">{children}</main>
+          </ThemeProvider>
+        </DndProvider>
       </div>
     </div>
   )

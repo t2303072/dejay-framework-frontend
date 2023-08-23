@@ -149,7 +149,6 @@ export default function TablePage() {
   }, [clickRowName, rowOrder])
 
   useEffect(() => {
-    selectMemberList()
     getBoardList().then((result) => {
       if (result) {
         setTableRow(result, 10)

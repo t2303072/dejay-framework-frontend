@@ -10,6 +10,9 @@ export function SidebarNav() {
         <Link href="/system/code/group">
           <div>GROUP CODE</div>
         </Link>
+        <Link href="/system/code/sub/0001">
+          <div>SUB CODE</div>
+        </Link>
       </div>
     </aside>
   )

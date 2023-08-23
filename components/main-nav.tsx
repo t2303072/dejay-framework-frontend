@@ -4,8 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Dejay } from '@/public/images/image'
 import { requestLogout } from '@/services/login'
-
-import { Button } from '@/components/ui/button'
+import { Button } from '@material-tailwind/react'
 
 export function MainNav() {
   const router = useRouter()

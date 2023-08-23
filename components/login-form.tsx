@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation'
 import { requestLogin } from '@/services/login'
 import { ResultStatus } from '@/types'
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/solid'
+import { Button } from '@material-tailwind/react'
 import { signIn } from 'next-auth/react'
 import { twMerge } from 'tailwind-merge'
 
-import { Button } from '@/components/ui/button'
 import { Spin } from '@/components/ui/spin'
 
 const iconOutFocusColor = 'fill-slate-400'
@@ -101,15 +101,8 @@ export function LoginForm() {
         />
       </div>
       <div className="w-full">
-        <Button className="h-10 w-full disabled:bg-slate-700" disabled={isLoading}>
-          {isLoading ? (
-            <div className="flex justify-center">
-              <Spin className="mr-2 h-5 w-5" />
-              로그인...
-            </div>
-          ) : (
-            '로그인'
-          )}
+        <Button type="submit" className="h-10 w-full disabled:bg-slate-700" disabled={isLoading}>
+          {isLoading ? <div className="flex justify-center">로그인...</div> : '로그인'}
         </Button>
       </div>
     </form>
