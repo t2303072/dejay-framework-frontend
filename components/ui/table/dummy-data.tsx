@@ -1,4 +1,5 @@
 import React from 'react'
+import { CodeList } from '@/types'
 
 export interface dummyHeaderProps {
   id: number
@@ -270,4 +271,117 @@ export const dummyBody2: dummyBodyProps[] = [
   },
 ]
 
-export default function Dummaydata() {}
+export const dummyCodeData: CodeList[] = [
+  {
+    code: '00010001',
+    codeName: '0001코드',
+    remark1: '설명1',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 1,
+    useYn: 'Y',
+  },
+  {
+    code: '00010002',
+    codeName: '0002코드',
+    remark1: '설명2',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 2,
+    useYn: 'Y',
+  },
+  {
+    code: '00010003',
+    codeName: '0003코드',
+    remark1: '설명3',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 3,
+    useYn: 'Y',
+  },
+  {
+    code: '00010004',
+    codeName: '0004코드',
+    remark1: '설명4',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 4,
+    useYn: 'Y',
+  },
+  {
+    code: '00010005',
+    codeName: '0005코드',
+    remark1: '설명5',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 5,
+    useYn: 'Y',
+  },
+  {
+    code: '00010006',
+    codeName: '0006코드',
+    remark1: '설명6',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 6,
+    useYn: 'Y',
+  },
+  {
+    code: '00010007',
+    codeName: '0007코드',
+    remark1: '설명7',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 7,
+    useYn: 'Y',
+  },
+  {
+    code: '00010008',
+    codeName: '0008코드',
+    remark1: '설명8',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 8,
+    useYn: 'Y',
+  },
+  {
+    code: '00010009',
+    codeName: '0009코드',
+    remark1: '설명9',
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 9,
+    useYn: 'Y',
+  },
+  {
+    code: '00010010',
+    codeName: '0010코드 수정',
+    remark1: '설명1 수정',
+    value1: 11,
+    remark2: '명2 수정',
+    value2: 2,
+    codeOrd: 10,
+    useYn: 'Y',
+  },
+  {
+    code: '00010011',
+    codeName: '0011코드',
+    remark1: null,
+    value1: null,
+    remark2: null,
+    value2: null,
+    codeOrd: 11,
+    useYn: 'Y',
+  },
+]
+
+export default function Dummydata() {}

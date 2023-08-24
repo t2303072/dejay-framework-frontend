@@ -7,7 +7,7 @@ import { Close } from '@/public/svgs/svg'
 import { requestCodeList, requestInsertCodeList } from '@/services/code'
 import {
   CodeList,
-  CodeListSearchType,
+  CodeListSearchData,
   InsertCodeRequest,
   InsertCodeType,
   OrderByCodeType,
@@ -34,7 +34,7 @@ export default function GroupcodePage() {
     { title: '코드명', value: 'cn' },
     { title: '코드 설명', value: 'r1' },
   ]
-  const defaultSearchParam: CodeListSearchType = {
+  const defaultSearchParam: CodeListSearchData = {
     search: {
       codeSearch: {
         type1: 'cn',
@@ -64,7 +64,7 @@ export default function GroupcodePage() {
   const [inputGroup, setInputGroup] = useState<string>('')
   const [inputCodeName, setInputCodeName] = useState<string>('')
   const [inputDesc, setInputDesc] = useState<string>('')
-  const [searchParams, setSearchParams] = useState<CodeListSearchType>(defaultSearchParam)
+  const [searchParams, setSearchParams] = useState<CodeListSearchData>(defaultSearchParam)
 
   const tableHeader: TableHeaderProps[] = [
     {
@@ -126,7 +126,7 @@ export default function GroupcodePage() {
     requestInsertCodeList({ data: { code: request } })
   }
 
-  function searchList(searchParams: CodeListSearchType) {
+  function searchList(searchParams: CodeListSearchData) {
     if (searchParams) {
       requestCodeList(searchParams).then((result) => {
         if (result && result.data) {
@@ -257,7 +257,8 @@ export default function GroupcodePage() {
               alt="close icon"
               width={23}
               height={23}
-              className="cursor-pointer relative bottom-[5px] left-[96%]"
+              className="cursor-poi
+              nter relative bottom-[5px] left-[96%]"
             />
             <div className="flex flex-col">
               <NormalInput

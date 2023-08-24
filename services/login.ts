@@ -5,7 +5,7 @@ import { AUTH_POST, GET, GET_LOCAL, POST } from '@/lib/api'
 
 export const login = async (data: UserInfo) => AUTH_POST<TokenResponse, UserInfo>('login', data)
 
-export const token = async (data: tokenRequest) => AUTH_POST<TokenResponse, tokenRequest>('login', data)
+export const token = async (data: tokenRequest) => AUTH_POST<TokenResponse, tokenRequest>('token/reissue-token', data)
 
 export const tokenAuth = async (data: tokenRequest) =>
   AUTH_POST<TokenResponse, tokenRequest>('token/authentication-info', data)

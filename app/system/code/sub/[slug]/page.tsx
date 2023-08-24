@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Bars, Close } from '@/public/svgs/svg'
-import { requestCodeList, requestInsertCodeList } from '@/services/code'
-import { CodeList, CodeListSearchType, InsertCodeType, TableHeaderProps } from '@/types'
+import { requestCodeList, requestInsertCodeList, requestUpdateListOrder } from '@/services/code'
+import { CodeList, CodeListSearchData, InsertCodeType, TableHeaderProps } from '@/types'
 import { Button, IconButton, Radio } from '@material-tailwind/react'
 
 import Card from '@/components/ui/card'
@@ -14,6 +14,7 @@ import Modal from '@/components/ui/modal'
 import ModalPortal from '@/components/ui/modal-portal'
 import Select from '@/components/ui/select'
 import { Spin } from '@/components/ui/spin'
+import { dummyCodeData } from '@/components/ui/table/dummy-data'
 import Table, { BodyTd, BodyTr, DragBodyTr, FootTd } from '@/components/ui/table/table'
 
 interface Props {
@@ -33,7 +34,7 @@ export default function SubCodePage({ params }: Props) {
     { title: '코드 설명', value: 'r1' },
   ]
 
-  const selectBoxSearchParam: CodeListSearchType = {
+  const selectBoxSearchParam: CodeListSearchData = {
     search: {
       codeSearch: {
         type1: 'cn',
@@ -49,7 +50,7 @@ export default function SubCodePage({ params }: Props) {
     },
   }
 
-  const defaultSearchParam: CodeListSearchType = {
+  const defaultSearchParam: CodeListSearchData = {
     search: {
       codeSearch: {
         type1: 'cn',
@@ -80,7 +81,7 @@ export default function SubCodePage({ params }: Props) {
   const [inputCodeValue, setInputCodeValue] = useState<string>('')
   const [inputCodeValueNum, setInputCodeValueNum] = useState<number>(0)
   const [inputUseYn, setInputUseYn] = useState<string>('')
-  const [searchParams, setSearchParams] = useState<CodeListSearchType>(defaultSearchParam)
+  const [searchParams, setSearchParams] = useState<CodeListSearchData>(defaultSearchParam)
   const [selectedRadio, setSelectedRadio] = useState<string>('Y')
 
   const tableHeader: TableHeaderProps[] = [
@@ -212,6 +213,11 @@ export default function SubCodePage({ params }: Props) {
     }
   }
 
+  function onOrderSubmit() {
+    const orderArray = data.map((item) => ({ code: item.code, codeOrd: item.codeOrd }))
+    requestUpdateListOrder({ data: { codeList: orderArray } })
+  }
+
   function onSubmit() {
     const request: InsertCodeType = {
       code: `${params.slug}${inputCode}`,
@@ -228,7 +234,7 @@ export default function SubCodePage({ params }: Props) {
   }
 
   // 셀렉트박스 내 selectList 변경할지 여부에 대해 boolean으로 파라미터를 받음
-  function searchList(searchParams: CodeListSearchType, selectList: boolean) {
+  function searchList(searchParams: CodeListSearchData, selectList: boolean) {
     requestCodeList(searchParams).then((result) => {
       if (result && result.data) {
         if (!selectList) {
@@ -258,9 +264,15 @@ export default function SubCodePage({ params }: Props) {
   }
 
   useEffect(() => {
-    searchList(searchParams, false)
-    searchList(selectBoxSearchParam, true)
+    // searchList(searchParams, false)
+    // searchList(selectBoxSearchParam, true)
+
+    setData(dummyCodeData)
   }, [])
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [data])
 
   useEffect(() => {
     if (selectGroup && selectGroup !== '전체') {
@@ -339,7 +351,10 @@ export default function SubCodePage({ params }: Props) {
           </div>
         </div>
       </Card>
-      <div className="flex justify-end">
+      <div className="flex w-full justify-between">
+        <Button className="m-3" onClick={() => setOpenModal(true)}>
+          순서변경
+        </Button>
         <Button className="m-3" onClick={() => setOpenModal(true)}>
           등록
         </Button>

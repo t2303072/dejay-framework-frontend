@@ -1,4 +1,4 @@
-import { ResultStatus } from '.'
+import { CommonDataResponse, ResultStatus } from '.'
 
 interface UserInfo {
   userName: string
@@ -27,25 +27,16 @@ export type ResultCode = ResultCodeMsg['code']
 
 interface tokenRequest {}
 
+type TokenObject = {
+  tokenObject: {
+    key: string
+    accessToken: string
+    refreshToken: string
+  }
+}
+
 type UserRole = 'SUPERVISOR' | 'USER'
 
-interface TokenData {
-  data: {
-    tokenObject: {
-      key: string
-      accessToken: string
-      refreshToken: string
-    }
-  }
-}
+interface TokenData extends Data<TokenObject> {}
 
-interface TokenResponse {
-  resultStatus: ResultStatus
-  data: {
-    tokenObject: {
-      key: string
-      accessToken: string
-      refreshToken: string
-    }
-  }
-}
+interface TokenResponse extends CommonDataResponse<TokenObject> {}

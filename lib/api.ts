@@ -1,4 +1,4 @@
-import type { CommonResponse, InsertBoardReq, InsertBoardRes, ResultStatus, SelectBoardListRes } from '@/types'
+import type { CommonResponse, InsertBoardReq, ResultStatus, SelectBoardListRes } from '@/types'
 import { ResultCode, ResultCodeMsg } from '@/types/auth'
 
 // 로컬스토리지에 저장된 토큰 검증
@@ -14,9 +14,9 @@ const headerConfig = (): string => {
     // refresh 토큰만 존재할때 예외처리
     // 액세스 토큰 갱신하는 api
   }
-  if (!access && !refresh) {
-    window.location.replace('/')
-  }
+  // if (!access && !refresh) {
+  //   window.location.replace('/')
+  // }
 
   return header
 }
@@ -44,9 +44,9 @@ export async function GET<T extends CommonResponse | ResultStatus>(path: string)
   const json = res.json()
   const resultStatus = res.status as ResultCode
 
-  if (checkExceptionError(resultStatus) !== true) {
-    alert(checkExceptionError(resultStatus))
-  }
+  // if (checkExceptionError(resultStatus) !== true) {
+  //   alert(checkExceptionError(resultStatus))
+  // }
 
   return json
 }
