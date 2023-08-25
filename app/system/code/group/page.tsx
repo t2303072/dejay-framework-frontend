@@ -4,7 +4,7 @@ import React, { ReactDOM, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Close } from '@/public/svgs/svg'
-import { requestCodeList, requestInsertCodeList } from '@/services/code'
+import { requestCodeDetail, requestCodeList, requestInsertCodeList } from '@/services/code'
 import {
   CodeList,
   CodeListSearchData,
@@ -14,7 +14,6 @@ import {
   TableHeaderProps,
 } from '@/types'
 import { Button } from '@material-tailwind/react'
-import { TableBody } from '@windmill/react-ui'
 
 import Card from '@/components/ui/card'
 import NormalInput from '@/components/ui/input/normal-input'
@@ -22,10 +21,11 @@ import Modal from '@/components/ui/modal'
 import ModalPortal from '@/components/ui/modal-portal'
 import Select, { ContentsObject } from '@/components/ui/select'
 import { Spin } from '@/components/ui/spin'
-import Table, { BodyTd, BodyTr, FootTd } from '@/components/ui/table/table'
+import Table, { BodySelectTd, BodyTd, BodyTr, FootSelectTd, FootTd } from '@/components/ui/table/table'
 
 interface TableBodyProps {
   data: CodeList[]
+  getOpenModal: (open: boolean) => void
 }
 
 export default function GroupcodePage() {
@@ -65,6 +65,8 @@ export default function GroupcodePage() {
   const [inputCodeName, setInputCodeName] = useState<string>('')
   const [inputDesc, setInputDesc] = useState<string>('')
   const [searchParams, setSearchParams] = useState<CodeListSearchData>(defaultSearchParam)
+  const [openEdit, setOpenEdit] = useState<boolean>(false)
+  const [editSelect, setEditSelect] = useState<string>('')
 
   const tableHeader: TableHeaderProps[] = [
     {
@@ -89,7 +91,7 @@ export default function GroupcodePage() {
     setSelectList(array)
   }
 
-  function TableBody({ data }: TableBodyProps) {
+  function TableBody({ data, getOpenModal }: TableBodyProps) {
     if (data) {
       const arrayLength = data.length - 1
       // 테이블에서 마지막 열만 아래에 border가 없는 스타일
@@ -99,12 +101,28 @@ export default function GroupcodePage() {
             <BodyTd cursor={false}>{item.code}</BodyTd>
             <BodyTd cursor={false}>{item.codeName}</BodyTd>
             <BodyTd cursor={false}>{item.remark1}</BodyTd>
+            <BodySelectTd
+              getOpenModal={(open: boolean) => {
+                getOpenModal(open)
+                setEditSelect(item.code)
+              }}
+              listBoxPosition="bottom"
+              cursor
+            />
           </BodyTr>
         ) : (
           <BodyTr key={item.code}>
             <FootTd cursor={false}>{item.code}</FootTd>
             <FootTd cursor={false}>{item.codeName}</FootTd>
             <FootTd cursor={false}>{item.remark1}</FootTd>
+            <FootSelectTd
+              getOpenModal={(open: boolean) => {
+                getOpenModal(open)
+                setEditSelect(item.code)
+              }}
+              listBoxPosition="bottom"
+              cursor
+            />
           </BodyTr>
         ),
       )
@@ -150,6 +168,10 @@ export default function GroupcodePage() {
   }
 
   useEffect(() => {
+    console.log('인풋값 디버깅', inputGroup)
+  }, [inputGroup])
+
+  useEffect(() => {
     searchList(searchParams)
   }, [])
 
@@ -175,6 +197,18 @@ export default function GroupcodePage() {
     param.search.codeSearch.searchWord1 = searchWord
     setSearchParams(param)
   }, [searchWord])
+
+  useEffect(() => {
+    if (openEdit) {
+      requestCodeDetail(editSelect).then((result) => {
+        if (result) {
+          setInputGroup(result.data.code.code.substring(0, 4))
+          setInputCodeName(result.data.code.codeName)
+          setInputDesc(result.data.code.remark1)
+        }
+      })
+    }
+  }, [openEdit])
 
   return (
     <div className="w-full h-screen">
@@ -208,12 +242,7 @@ export default function GroupcodePage() {
               width="min-w-[155px]"
               ariaLabel="코드 검색시 카테고리 선택"
             />
-            <NormalInput
-              disabled={false}
-              value={searchWord}
-              onChange={(e) => setSearchWord(e.target.value)}
-              className="min-w-50 ml-2"
-            />
+            <NormalInput disabled={false} value={searchWord} getValue={setSearchWord} className="min-w-50 ml-2" />
             <Button className="mr-2 ml-2" onClick={() => onCheckValueSearch()}>
               검색
             </Button>
@@ -244,7 +273,7 @@ export default function GroupcodePage() {
       {!isLoading && (
         <Card>
           <Table headerContent={tableHeader} setTableOrder={setRowOrder} getClickedHeaderName={setClickRowName}>
-            <TableBody data={data} />
+            <TableBody data={data} getOpenModal={(open: boolean) => setOpenEdit(open)} />
           </Table>
         </Card>
       )}
@@ -257,26 +286,25 @@ export default function GroupcodePage() {
               alt="close icon"
               width={23}
               height={23}
-              className="cursor-poi
-              nter relative bottom-[5px] left-[96%]"
+              className="cursor-pointer relative bottom-[5px] left-[96%]"
             />
             <div className="flex flex-col">
               <NormalInput
                 disabled={false}
                 maxLength={4}
-                onChange={(e) => setInputGroup(e.target.value)}
+                getValue={setInputGroup}
                 label="그룹코드"
                 className="w-[200px] ml-2 mb-4"
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputCodeName(e.target.value)}
+                getValue={setInputCodeName}
                 label="코드명"
                 className="w-[200px] ml-2 mb-4"
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputDesc(e.target.value)}
+                getValue={setInputDesc}
                 label="코드 설명"
                 className="min-w-[350px] mb-4 ml-2"
               />
@@ -292,6 +320,66 @@ export default function GroupcodePage() {
                 저장
               </Button>
               <Button onClick={() => setOpenModal(false)}>닫기</Button>
+            </div>
+          </div>
+        </Modal>
+      </ModalPortal>
+      {/* 수정 팝업 */}
+      <ModalPortal>
+        <Modal open={openEdit} className="w-[530px]">
+          <div>
+            <Image
+              onClick={() => setOpenEdit(false)}
+              src={Close}
+              alt="close icon"
+              width={23}
+              height={23}
+              className="cursor-pointer relative bottom-[5px] left-[96%]"
+            />
+            <div className="flex flex-col">
+              <NormalInput
+                value={inputGroup}
+                disabled={false}
+                maxLength={4}
+                getValue={setInputGroup}
+                label="그룹코드"
+                className="w-[200px] ml-2 mb-4"
+              />
+              <NormalInput
+                value={inputCodeName}
+                disabled={false}
+                getValue={setInputCodeName}
+                label="코드명"
+                className="w-[200px] ml-2 mb-4"
+              />
+              <NormalInput
+                value={inputDesc}
+                disabled={false}
+                getValue={setInputDesc}
+                label="코드 설명"
+                className="min-w-[350px] mb-4 ml-2"
+              />
+            </div>
+            <div className="relative left-[161px]">
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  onSubmit()
+                  setOpenEdit(false)
+                }}
+              >
+                저장
+              </Button>
+              <Button
+                onClick={() => {
+                  setOpenEdit(false)
+                  setInputGroup('')
+                  setInputCodeName('')
+                  setInputDesc('')
+                }}
+              >
+                닫기
+              </Button>
             </div>
           </div>
         </Modal>

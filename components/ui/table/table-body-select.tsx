@@ -9,9 +9,10 @@ import { List } from '@/components/ui/select'
 interface TableBodySelectProps {
   openSelect: boolean
   listBoxPosition: ListBoxPositionType
+  getOpenModal: (open: boolean) => void
 }
 
-export default function TableBodySelect({ openSelect, listBoxPosition }: TableBodySelectProps) {
+export default function TableBodySelect({ openSelect, listBoxPosition, getOpenModal }: TableBodySelectProps) {
   const eventEl = useRef<HTMLDivElement>(null)
   const [clickValue, setClickValue] = useState<string | number>()
   const [show, setShow] = useState<boolean>(false)
@@ -51,8 +52,16 @@ export default function TableBodySelect({ openSelect, listBoxPosition }: TableBo
             listBoxPosition === 'top' ? 'absolute bottom-[56px] right-[19px]' : 'absolute'
           } &&  z-50 w-20 rounded-lg border border-slate-200 bg-white font-medium text-slate-500`}
         >
-          <List value="Edit" getClickValue={(text: string | number) => getClickValue}></List>
-          <List value="Delete" getClickValue={(text: string | number) => getClickValue}></List>
+          <List
+            value="Edit"
+            getOpenModal={(open) => getOpenModal(open)}
+            getClickValue={(text: string | number) => getClickValue}
+          ></List>
+          <List
+            value="Delete"
+            getOpenModal={(open) => {}}
+            getClickValue={(text: string | number) => getClickValue}
+          ></List>
         </ul>
       </Transition>
     </div>

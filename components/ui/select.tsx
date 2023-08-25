@@ -11,6 +11,7 @@ interface ListProps {
   value: string
   constantValue?: string
   getClickValue: (value: string) => void
+  getOpenModal: (open: boolean) => void
 }
 
 export interface ContentsObject {
@@ -31,12 +32,15 @@ interface SelectProps {
 
 // eslint-disable-next-line react/display-name
 export const List = React.forwardRef<HTMLLIElement, React.PropsWithChildren<ListProps>>(
-  ({ value, constantValue, getClickValue }, ref) => {
+  ({ value, constantValue, getClickValue, getOpenModal }, ref) => {
     return (
       <li
         ref={ref}
         onClick={() => {
           getClickValue(constantValue ?? value)
+          if (value === 'Edit' || constantValue === 'Edit') {
+            getOpenModal(true)
+          }
         }}
         className="m-1 cursor-pointer rounded-lg p-1 hover:bg-neutral-50"
       >
@@ -59,6 +63,7 @@ export default function Select({
   const eventEl = useRef<HTMLDivElement>(null)
   const [clickValue, setClickValue] = useState<string>()
   const [show, setShow] = useState(false)
+  const [openModal, setOpenModal] = useState<boolean>(false)
 
   // defaultValue: 기본 셀렉트박스 값, default value가 노출
   // contents : 셀렉트 박스 리스트 항목들 []
@@ -125,6 +130,7 @@ export default function Select({
                   setShow(false)
                   getClickValue(value)
                 }}
+                getOpenModal={(open: boolean) => {}}
               />
             ))}
           {contentsArray &&
@@ -138,6 +144,7 @@ export default function Select({
                   setShow(false)
                   getClickValue(value)
                 }}
+                getOpenModal={(open: boolean) => {}}
               />
             ))}
         </ul>

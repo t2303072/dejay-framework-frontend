@@ -9,7 +9,7 @@ import { Button } from '@material-tailwind/react'
 export function MainNav() {
   const router = useRouter()
   // function handleClick() {
-  //   signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_FRONTEND_URL}` })
+  //   signOut({ : `${process.env.NEXT_PUBLIC_FRONTEND_URL}` })
   // }
 
   function logoutClick() {

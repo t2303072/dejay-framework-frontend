@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Bars, Close } from '@/public/svgs/svg'
@@ -8,6 +8,7 @@ import { requestCodeList, requestInsertCodeList, requestUpdateListOrder } from '
 import { CodeList, CodeListSearchData, InsertCodeType, TableHeaderProps } from '@/types'
 import { Button, IconButton, Radio } from '@material-tailwind/react'
 
+import ImageMemo from '@/components/Image'
 import Card from '@/components/ui/card'
 import NormalInput from '@/components/ui/input/normal-input'
 import Modal from '@/components/ui/modal'
@@ -179,7 +180,7 @@ export default function SubCodePage({ params }: Props) {
             key={item.code}
           >
             <BodyTd cursor={true}>
-              <Image src={Bars} alt="bars icon" width={20} height={20} />
+              <ImageMemo src={Bars} alt="bars icon" width={20} height={20} />
             </BodyTd>
             <BodyTd cursor={false}>{item.code}</BodyTd>
             <BodyTd cursor={false}>{item.codeOrd}</BodyTd>
@@ -199,7 +200,7 @@ export default function SubCodePage({ params }: Props) {
             key={item.code}
           >
             <FootTd cursor={true}>
-              <Image src={Bars} alt="bars icon" width={20} height={20} />
+              <ImageMemo src={Bars} alt="bars icon" width={20} height={20} />
             </FootTd>
             <FootTd cursor={false}>{item.code}</FootTd>
             <FootTd cursor={false}>{item.codeOrd}</FootTd>
@@ -214,8 +215,8 @@ export default function SubCodePage({ params }: Props) {
   }
 
   function onOrderSubmit() {
-    const orderArray = data.map((item) => ({ code: item.code, codeOrd: item.codeOrd }))
-    requestUpdateListOrder({ data: { codeList: orderArray } })
+    const orderArray = data.map((item, index) => ({ code: item.code, codeOrd: index + 1 }))
+    requestUpdateListOrder({ data: { codeList: orderArray } }).then(() => searchList(searchParams, false))
   }
 
   function onSubmit() {
@@ -227,7 +228,7 @@ export default function SubCodePage({ params }: Props) {
       remark2: '',
       value2: 22,
       useYn: selectedRadio,
-      codeOrd: selectList.length,
+      codeOrd: data.length,
     }
 
     requestInsertCodeList({ data: { code: request } }).then(() => window.location.reload())
@@ -264,15 +265,9 @@ export default function SubCodePage({ params }: Props) {
   }
 
   useEffect(() => {
-    // searchList(searchParams, false)
-    // searchList(selectBoxSearchParam, true)
-
-    setData(dummyCodeData)
+    searchList(searchParams, false)
+    searchList(selectBoxSearchParam, true)
   }, [])
-
-  useEffect(() => {
-    setIsLoading(false)
-  }, [data])
 
   useEffect(() => {
     if (selectGroup && selectGroup !== '전체') {
@@ -329,12 +324,7 @@ export default function SubCodePage({ params }: Props) {
               width="min-w-[155px]"
               ariaLabel="코드 검색시 카테고리 선택"
             />
-            <NormalInput
-              value={searchWord}
-              disabled={false}
-              onChange={(e) => setSearchWord(e.target.value)}
-              className="min-w-50 ml-2"
-            />
+            <NormalInput getValue={setSearchWord} disabled={false} className="min-w-50 ml-2" />
             <Button className="mr-2 ml-2" onClick={() => onCheckValueSearch()}>
               검색
             </Button>
@@ -352,7 +342,7 @@ export default function SubCodePage({ params }: Props) {
         </div>
       </Card>
       <div className="flex w-full justify-between">
-        <Button className="m-3" onClick={() => setOpenModal(true)}>
+        <Button className="m-3" onClick={() => onOrderSubmit()}>
           순서변경
         </Button>
         <Button className="m-3" onClick={() => setOpenModal(true)}>
@@ -386,13 +376,12 @@ export default function SubCodePage({ params }: Props) {
             />
             <div className="flex flex-col">
               <NormalInput
-                onChange={(e) => {
-                  const inputValue = e.target.value
+                getValue={(text: string) => {
+                  const inputValue = text
                   const numericValue = inputValue.replace(/\D/g, '')
 
                   setInputCode(numericValue)
                 }}
-                // 숫자만 입력할 수 있도록 처리
                 onInput={(e) => {
                   e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '') // 숫자 이외의 문자 제거
                 }}
@@ -403,19 +392,19 @@ export default function SubCodePage({ params }: Props) {
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputCodeName(e.target.value)}
+                getValue={setInputCodeName}
                 label="코드명"
                 className="w-[200px] ml-2 mb-4"
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputCodeValue(e.target.value)}
+                getValue={setInputCodeValue}
                 label="코드값1 명"
                 className="min-w-[350px] mb-4 ml-2"
               />
               <NormalInput
                 disabled={false}
-                onChange={(e) => setInputCodeValueNum(Number(e.target.value))}
+                getValue={(text: string) => setInputCodeValueNum(Number(text))}
                 label="코드값1 (숫자)"
                 className="w-[200px] ml-2 mb-4"
               />

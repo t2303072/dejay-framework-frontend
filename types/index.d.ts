@@ -124,8 +124,18 @@ type CodeListResponseType = {
   codeList: CodeList[]
 }
 
+type CodeDetailRequestType = {
+  codeSearch: {
+    code: string
+  }
+}
+
 export interface InsertCodeRequest extends Data<InsertCodeData> {}
+
+export interface CodeDetailResponse extends CommonDataResponse<InsertCodeData> {}
 
 export interface UpdateCodeOrderRequest extends Data<UpdateCodeOrderData> {}
 
 export interface CodeListResponse extends CommonDataResponse<CodeListResponseType> {}
+
+export interface CodeDetailRequest extends Search<CodeDetailRequestType> {}

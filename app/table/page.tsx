@@ -91,7 +91,7 @@ export default function TablePage() {
             <BodyTd cursor={false}>{item.content}</BodyTd>
             <BodyTd cursor={true}>{item.createdAt}</BodyTd>
             <BodyTd cursor={false}>{item.createdBy}</BodyTd>
-            <BodySelectTd listBoxPosition="bottom" cursor={true} />
+            <BodySelectTd getOpenModal={(open: boolean) => {}} listBoxPosition="bottom" cursor={true} />
           </BodyTr>
         ) : (
           <BodyTr key={item.boardNo}>
@@ -100,7 +100,7 @@ export default function TablePage() {
             <FootTd cursor={false}>{item.content}</FootTd>
             <FootTd cursor={true}>{item.createdAt}</FootTd>
             <FootTd cursor={false}>{item.createdBy}</FootTd>
-            <FootSelectTd listBoxPosition="top" cursor={true} />
+            <FootSelectTd getOpenModal={(open: boolean) => {}} listBoxPosition="top" cursor={true} />
           </BodyTr>
         ),
       )

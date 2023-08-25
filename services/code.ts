@@ -1,4 +1,12 @@
-import { CodeListResponse, CodeListSearchData, InsertCodeRequest, ResultStatus, UpdateCodeOrderRequest } from '@/types'
+import {
+  CodeDetailRequest,
+  CodeDetailResponse,
+  CodeListResponse,
+  CodeListSearchData,
+  InsertCodeRequest,
+  ResultStatus,
+  UpdateCodeOrderRequest,
+} from '@/types'
 
 import { POST } from '@/lib/api'
 
@@ -10,6 +18,9 @@ export const insertCodeList = async (data: InsertCodeRequest) =>
 
 export const updateOrderCodeList = async (data: UpdateCodeOrderRequest) =>
   POST<ResultStatus, UpdateCodeOrderRequest>('code/updateCodeOrder', data)
+
+export const selectCodeDetail = async (data: CodeDetailRequest) =>
+  POST<CodeDetailResponse, CodeDetailRequest>('code/row', data)
 
 export const requestCodeList = async (data: CodeListSearchData) => {
   try {
@@ -34,6 +45,17 @@ export const requestInsertCodeList = async (data: InsertCodeRequest) => {
 export const requestUpdateListOrder = async (data: UpdateCodeOrderRequest) => {
   try {
     const res = await updateOrderCodeList(data)
+
+    return res
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const requestCodeDetail = async (codeString: string) => {
+  try {
+    const data = { search: { codeSearch: { code: codeString } } }
+    const res = await selectCodeDetail(data)
 
     return res
   } catch (e) {

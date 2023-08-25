@@ -43,6 +43,7 @@ interface TdProps extends BodyTrProps {
 interface TdSelectProps {
   cursor: boolean
   listBoxPosition: ListBoxPositionType
+  getOpenModal: (open: boolean) => void
 }
 
 function TableHead({ setTableOrder, headerContent, getClickedHeaderName }: TableHeadProps) {
@@ -121,23 +122,31 @@ export function BodyTd({ cursor, children }: TdProps) {
 }
 
 // 클릭시 edit/delete select바 노출
-export function BodySelectTd({ listBoxPosition, cursor }: TdSelectProps) {
+export function BodySelectTd({ listBoxPosition, cursor, getOpenModal }: TdSelectProps) {
   const [openSelect, setOpenSelect] = useState<boolean>(false)
   return (
     <td
       onClick={(e) => setOpenSelect(!openSelect)}
       className="border-b-slate cursor-pointer border-b pb-3 pl-2.5 pt-3 "
     >
-      <TableBodySelect listBoxPosition={listBoxPosition} openSelect={openSelect} />
+      <TableBodySelect
+        getOpenModal={(open: boolean) => getOpenModal(open)}
+        listBoxPosition={listBoxPosition}
+        openSelect={openSelect}
+      />
     </td>
   )
 }
 
-export function FootSelectTd({ listBoxPosition, cursor }: TdSelectProps) {
+export function FootSelectTd({ listBoxPosition, cursor, getOpenModal }: TdSelectProps) {
   const [openSelect, setOpenSelect] = useState(false)
   return (
     <td onClick={(e) => setOpenSelect(!openSelect)} className="cursor-pointer pb-3 pl-2.5 pt-3 ">
-      <TableBodySelect openSelect={openSelect} listBoxPosition={listBoxPosition} />
+      <TableBodySelect
+        getOpenModal={(open: boolean) => getOpenModal(open)}
+        openSelect={openSelect}
+        listBoxPosition={listBoxPosition}
+      />
     </td>
   )
 }
